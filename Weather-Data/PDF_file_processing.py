@@ -1,4 +1,3 @@
-import pandas as pd
 import tabula as tb
 from pathlib import Path
 
