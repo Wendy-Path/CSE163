@@ -25,8 +25,7 @@ def df_combining(pd, folder):
         df_all = pd.concat([df_all, df])
     print(df_all)
     return df_all
-    
-    
+
 
 def main():
     print('hi')
@@ -35,11 +34,7 @@ def main():
     #df.to_csv('all_temp_data.csv')
     df.to_csv('all_prec_data.csv')
     
-    
-    
-    
 
-    
 if __name__ == '__main__':
     main()
     
