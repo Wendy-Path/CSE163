@@ -15,10 +15,19 @@ def dataset_information(df, pd):
     
     df = df.replace('M', np.nan)
     missing_value_count = df.isna().sum().sum()
-    total_values = rows*(columns-3)
+    total_values = rows*(columns-4)
     print("Total missing value count: " + str(missing_value_count))
     percentage = (missing_value_count/total_values)
     print('Percentage of missing values: ' + str(percentage))
+    
+    #print('location list: ')
+    location_list = set()
+    for loc in df['location'].unique():
+        #print(loc)
+        location_list.add(loc)
+    return location_list
+    #print(df['location'].unique())
+
     
     #sns.relplot(x='Year', y='Annual', data=df)
     #plt.show()
@@ -28,12 +37,24 @@ def main():
 
     print('Temperature stuff: ')
     df_temp = pd.read_csv(file_temp)
-    dataset_information(df_temp, pd)
-    '''
+    location_list_temp = dataset_information(df_temp, pd)
+    
+    
+    
     print('Precipitation stuff: ')
     df_prec = pd.read_csv(file_prec)
-    dataset_information(df_prec, pd)
-    '''
+    #dataset_information(df_prec, pd)
+    location_list_prec = dataset_information(df_prec, pd)
     
+    diff = location_list_temp.difference(location_list_prec)
+    print('Locations in temperature data but not in precipitation data: ')
+    for loc in diff:
+        print(loc)
+        
+    diff2 = location_list_prec.difference(location_list_temp)
+    print('Locations in precipitation data but not in temperature data: ')
+    for loc in diff2:
+        print(loc)
+
 if __name__ == '__main__':
     main()
