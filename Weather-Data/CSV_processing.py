@@ -77,28 +77,6 @@ def get_county(location, counties):
     return None
 
 
-def adding_county_column(df, counties):
-    '''
-   location_to_county = {
-        location: county
-        for county, locations in counties.items()
-        for location in locations
-    }
-    df = df.copy()
-    locations = df.index.get_level_values('location')
-    df['county'] = locations.map(location_to_county)
-    return df
-    
-    for location in df['location']:
-        for county in counties:
-            for loc in 
-    df['county'] = ''
-    for county, locations in counties.items():
-        for location in locations:
-            df.loc[df['location'] == location, 'county'] = county
-    return df
-    '''
-
 def main():
     print('hi')
     
