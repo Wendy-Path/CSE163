@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 
 #file = 'Weather-Data/Weather-Data-Files/temp/temp-csv/Temp-Aberdeen.csv'
+# 1/3 toggles for weather and precipication
 #folder = 'Weather-Data/Weather-Data-Files/temp/temp-csv'
 folder = 'Weather-Data/Weather-Data-Files/prec/prec-csv'
 
@@ -10,7 +11,7 @@ counties = {
         'Asotin': ['Asotin-14SW'],
         'Benton': ['Prosser', 'Richland', 'Kennewick'],
         'Chelan': ['Leavenworth', 'Stehekin-4NW', 'Wenatchee', 'Plain', 'Chelan', 'HoldenVillage', 'EntiatFishHatchery'],
-        'Callam': ['QuillayuteAP', 'Forks', 'PortAngelesFairChildIntlAP', 'Sequim-2E'],
+        'Clallam': ['QuillayuteAP', 'Forks', 'PortAngelesFairChildIntlAP', 'Sequim-2E'],
         'Clark': ['Vancouver', 'BattleGround'],
         'Columbia': ['Dayton-1WSW'],
         'Cowlitz': ['Longview', 'Cougar', 'KalamaFallsHatchery'],
@@ -25,7 +26,7 @@ counties = {
         'King': ['MudMountainDam', 'SeattleBoeingField', 'Landsburg', 'Palmer-3ESE', 'RentonMunicipalAP', 'ToltSouthForkReservoir', 'CedarLake', 'SeattleTacomaAP', 'Kent', 'SnoqualmieFalls', 'Baring'],
         'Kitsap': ['Bremerton', 'Poulsbo-1NW'],
         'Kittitas': ['Ellensburg', 'CleElum', 'Easton'],
-        'Kickitat': ['Snowden', 'MountAdamsRS', 'Goldendale', 'DallesportAP', 'Bickleton'],
+        'Klickitat': ['Snowden', 'MountAdamsRS', 'Goldendale', 'DallesportAP', 'Bickleton'],
         'Lewis': ['MayfieldPowerPlant', 'Centralia', 'Dryad'],
         'Lincoln': ['Odessa', 'Wilbur', 'Harrington', 'DavenPort'],
         'Mason': ['SheltonAP', 'CushmanPowerhouse2', 'Matlock-8S'],
@@ -59,6 +60,7 @@ def df_combining(pd, folder):
         df = df_formatting(pd, file)
         
         location_name = Path(file).stem
+        # 2/3 toggles for weather and precipication
         #location_name = location_name.replace('Temp-', '')
         location_name = location_name.replace('Prec-', '')
         df['location'] = location_name
@@ -83,8 +85,8 @@ def main():
     df = df_combining(pd, folder)
     df = df.set_index(['county', 'location', 'Year'])
     print(df)
+    # 3/3 toggles for weather and precipication
     #df.to_csv('all_temp_data_counties.csv')
-    
     df.to_csv('all_prec_data_counties.csv')
     
 

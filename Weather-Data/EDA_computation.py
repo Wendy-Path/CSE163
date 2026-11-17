@@ -37,11 +37,57 @@ def dataset_information(df, pd):
     print(county_df)
 
     #print(df['location'].unique())
+    '''
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.relplot(x='Annual', y='Year', data=df, ax=ax)
+    ax.set_xlim(10, 80)
+    plt.show()
+    '''
     
 
+def plot_annual_temperature_by_county(df_temp):
+    plot_data = df_temp.assign(
+        Annual=pd.to_numeric(df_temp['Annual'], errors='coerce')
+    )
+    county_year = (
+        plot_data.pivot_table(
+            index='county',
+            columns='Year',
+            values='Annual',
+            aggfunc='mean',
+        )
+        .sort_index()
+    )
+
+    fig, ax = plt.subplots(figsize=(8, 8), constrained_layout=True)
+    sns.heatmap(
+        county_year,
+        ax=ax,
+        cmap='viridis',
+        mask=county_year.isna(),
+        cbar_kws={'label': 'Mean annual temperature'},
+    )
+    ax.set(title='Mean annual temperature by county', xlabel='Year', ylabel='County')
+
+    plt.show()
     
-    #sns.relplot(x='Year', y='Annual', data=df)
-    #plt.show()
+
+def plot_location_by_county(df_temp):
+    df_temp = df_temp[['county', 'location']]
+    df_temp = df_temp.drop_duplicates()
+    location_count = df_temp.groupby('county').count()
+    #print(type(location_count))
+    fig, ax = plt.subplots(figsize=(8, 8), constrained_layout=True)
+    sns.barplot(
+        ax = ax,
+        x=location_count['location'],
+        y=location_count.index,
+    )
+    ax.set(title='Number of locations by county', ylabel='County', xlabel='Number of locations')
+    
+    plt.show()
+    
+    
 
 def sorting_annual_data(df, pd):
     df = df['Annual']
@@ -94,7 +140,12 @@ def five_number_summary(numbers):
     print('Median: ' + str(median(numbers)))
     print('Third quartile: ' + str(median(upper_half)))
     print('Maximum: ' + str(numbers[-1]))
-    #return numbers[0], median(lower_half), median(numbers), median(upper_half), numbers[-1]
+
+
+def adding_GHG_data(temp_df, GHG_df):
+    GHG_df = GHG_df[['County', 'Year', 'Reported Emissions (MTCO2e)']]
+    return temp_df
+    
 
 
 def main():
@@ -108,7 +159,18 @@ def main():
     print('Seven number summary for annual temperatures: ')
     five_number_summary(sorted_annual_temps)
     
+    # plotting data
+    #plot_annual_temperature_by_county(df_temp)
+    #plot_location_by_county(df_temp)
     
+    # Adding GHG data to temperature data
+    GHG_df = pd.read_csv('GHG Data/GHG_Reporting_Program_Publication_processed.csv')
+    new_temp_df = adding_GHG_data(df_temp, GHG_df)
+    
+    print(new_temp_df)
+    new_temp_df.to_csv('temporary.csv', index=False)
+
+
     print('Precipitation stuff: ')
     df_prec = pd.read_csv(file_prec)
     #dataset_information(df_prec, pd)
