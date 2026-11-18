@@ -1,10 +1,12 @@
 import csv
 
-def find_common_counties_each_year():
+FILE_PREFIX = "Original CSV Files/annual_aqi_by_county"
+
+def find_common_counties_each_year(start_year, end_year, FILE_PREFIX):
     counties_each_year = []
 
-    for year in range(2012, 2025):  # Loops from 2012 up to 2024 (13 files)
-        filename = f"Original CSV Files/annual_aqi_by_county_{year}.csv"
+    for year in range(start_year, end_year + 1):  # Loops from start_year up to end_year (inclusive)
+        filename = f"{FILE_PREFIX}_{year}.csv"
         year_counties = set()
         
         with open(filename, "r", newline="", encoding="utf-8") as infile:
@@ -19,6 +21,7 @@ def find_common_counties_each_year():
     # Keep ONLY counties that appear in EVERY single year
     common_counties = set.intersection(*counties_each_year)
     return common_counties
+
 
 def all_washington_rows_with_common_counties(common_counties):
     """
@@ -52,7 +55,7 @@ def all_washington_rows_with_common_counties(common_counties):
 
 def main():
     
-    common_counties = find_common_counties_each_year()
+    common_counties = find_common_counties_each_year(2012, 2024, FILE_PREFIX)
     all_washington_rows_with_common_counties(common_counties)
 
 if __name__ == "__main__":

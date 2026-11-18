@@ -1,0 +1,5 @@
+﻿State,County,Year,Days with AQI,Good Days,Moderate Days,Unhealthy for Sensitive Groups Days,Unhealthy Days,Very Unhealthy Days,Hazardous Days,Max AQI,90th Percentile AQI,Median AQI,Days CO,Days NO2,Days Ozone,Days PM2.5,Days PM10
+Alabama,Baldwin,2023,347,236,111,0,0,0,0,90,60,43,0,0,108,239,0
+Washington,Adams,2023,365,330,32,1,0,2,0,267,50,21,0,0,0,365,0
+Washington,Asotin,2023,359,184,169,4,1,1,0,204,67,49,0,0,0,359,0
+Washington,Benton,2023,365,262,99,1,1,2,0,261,61,41,0,0,117,228,20
