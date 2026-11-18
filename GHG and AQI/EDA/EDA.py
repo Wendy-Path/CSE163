@@ -1,3 +1,4 @@
+import textwrap
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -44,32 +45,43 @@ def seven_number_summary(df, column):
     print(f"3rd Quartile (Q3): {q3}")
     print(f"Maximum: {max_value}")
 
-def scatter_plot(df, x_column, y_column):
-
-    plt.scatter(df[x_column], df[y_column])
-    plt.xlabel(x_column)
-    plt.ylabel(y_column)
-    plt.title(f'Scatter Plot of {y_column} vs {x_column}')
-    plt.show()
 
 def line_plot(df):
     yearly_avg = df.groupby("Year")[["Reported Emissions (MTCO2e)", "Median AQI"]].mean().reset_index()
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
     ax1.plot(yearly_avg["Year"], yearly_avg["Reported Emissions (MTCO2e)"], color="green")
     ax2.plot(yearly_avg["Year"], yearly_avg["Median AQI"], color="blue")
 
     ax1.set_xlabel("Year")
     ax1.set_ylabel("Average Emissions (MTCO2e)")
-    ax1.set_title("Emissions Over Time")
+    ax1.set_title("Emissions Over Time in Washington State (2012-2024)")
 
     ax2.set_xlabel("Year")
     ax2.set_ylabel("Average Median AQI")
-    ax2.set_title("AQI Over Time")
+    ax2.set_title("AQI Over Time in Washington State (2012-2024)")
 
-    plt.tight_layout()
+    caption = (
+        "Figure 2. Trends in average reported emissions and "
+        "median Air Quality Index (AQI) from 2012 to 2024 in Washington "
+        "State. While reported emissions generally increased, median AQI "
+        "decreased."
+    )
+
+    wrapped_caption = textwrap.fill(caption, width=70)
+
+    fig.text(
+    0.5, 0.01, 
+    wrapped_caption,
+    ha="center", 
+    fontsize=10, 
+    style="italic"
+    )
+
+    plt.subplots_adjust(bottom=0.18)
     plt.show()
+
 
 def box_plot(df):
 
@@ -79,7 +91,7 @@ def box_plot(df):
     labels=["Low", "Medium", "High"]
     )
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 8))
 
     df.boxplot(
         column="Median AQI",
@@ -89,7 +101,27 @@ def box_plot(df):
 
     ax.set_xlabel("Reported Emissions Level")
     ax.set_ylabel("Median AQI")
-    ax.set_title("Median AQI Distribution by Emissions Level")
+    fig.suptitle("")
+    ax.set_title("Median AQI Distribution by Emissions Level in Washington State")
+
+    caption = (
+    "Figure 1. Distribution of median Air Quality Index (AQI) across "
+    "counties grouped by low, medium, and high reported emissions. "
+    "Counties with higher reported emissions generally exhibit higher "
+    "median AQI values."
+    )
+
+    wrapped_caption = textwrap.fill(caption, width=70)
+
+    fig.text(
+    0.5, 0.01, 
+    wrapped_caption,
+    ha="center", 
+    fontsize=10, 
+    style="italic"
+    )
+
+    plt.subplots_adjust(bottom=0.18)
     plt.show()
 
 def main():
@@ -109,7 +141,6 @@ def main():
     print()
     seven_number_summary(df, 'Median AQI')
 
-    #scatter_plot(df, 'Reported Emissions (MTCO2e)', 'Median AQI')
     line_plot(df)
     box_plot(df)
 if __name__ == "__main__":
