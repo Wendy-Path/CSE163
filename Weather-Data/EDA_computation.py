@@ -71,29 +71,38 @@ def plot_annual_temperature_by_county(df_temp):
 
     plt.show()
     
-
-def plot_location_by_county(df_temp):
-    df_temp = df_temp[['county', 'location']]
-    df_temp = df_temp.drop_duplicates()
-    location_count = df_temp.groupby('county').count()
-    #print(type(location_count))
-    fig, ax = plt.subplots(figsize=(8, 8), constrained_layout=True)
-    sns.barplot(
-        ax = ax,
-        x=location_count['location'],
-        y=location_count.index,
+def plot_emmisions_by_county(df_temp):
+    plot_data = df_temp.assign(
+        Annual=pd.to_numeric(df_temp['County Emissions (MTCO2e)'], errors='coerce')
     )
-    ax.set(title='Number of locations by county', ylabel='County', xlabel='Number of locations')
-    
-    plt.show()
-    
-    
+    county_year = (
+        plot_data.pivot_table(
+            index='county',
+            columns='Year',
+            values='Annual',
+            aggfunc='mean',
+        )
+        .sort_index()
+    )
 
-def sorting_annual_data(df, pd):
-    df = df['Annual']
+    fig, ax = plt.subplots(figsize=(8, 8), constrained_layout=True)
+    sns.heatmap(
+        county_year,
+        ax=ax,
+        cmap='viridis',
+        mask=county_year.isna(),
+        cbar_kws={'label': 'Mean annual emissions'},
+    )
+    ax.set(title='Mean annual emissions by county', xlabel='Year', ylabel='County')
+
+    plt.show()
+
+
+def sorting_data(df, column, pd):
+    df = df[column]
     df = df.replace('M', np.nan)
     df = df.dropna()
-    #df['Annual'] = pd.to_numeric(df['Annual'], errors='coerce')
+    #df[column] = pd.to_numeric(df[column], errors='coerce')
     df = df.sort_values(ascending=True)
     df = pd.to_numeric(df)
     #print(list(df))
@@ -115,9 +124,9 @@ def median(numbers):
     return result    
 
 
-def five_number_summary(numbers):
+def seven_number_summary(numbers):
     """
-    Given a sorted list of numbers, returns a tuple of the five-number
+    Given a sorted list of numbers, returns a tuple of the seven-number
     summary: the minimum, first quartile, median, third quartile,
     and maximum.
     """
@@ -143,39 +152,84 @@ def five_number_summary(numbers):
 
 
 def adding_GHG_data(temp_df, GHG_df):
-    GHG_df = GHG_df[['County', 'Year', 'Reported Emissions (MTCO2e)']]
-    return temp_df
+    emissions_column = 'Reported Emissions (MTCO2e)'
+    county_emissions = GHG_df[['County', 'Year', emissions_column]].copy()
+    county_emissions[emissions_column] = pd.to_numeric(
+        county_emissions[emissions_column]
+        .astype('string')
+        .str.replace(',', '', regex=False),
+        errors='raise',
+    )
+    county_emissions = (
+        county_emissions.groupby(['County', 'Year'], as_index=False)[emissions_column]
+        .sum()
+        .rename(columns={
+            'County': 'county',
+            emissions_column: 'County Emissions (MTCO2e)',
+        })
+    )
     
+    return temp_df.merge(
+        county_emissions,
+        how='left',
+        on=['county', 'Year'],
+        validate='many_to_one',
+    )
+  
+def filtering_GHG_data(df, pd): 
+    df = df[df['County Emissions (MTCO2e)'] > 0]
+    df = df.dropna(subset=['County Emissions (MTCO2e)'])
+    return df
+     
 
 
 def main():
     print('hi')
 
+    df_temp = pd.read_csv('Weather-Data/combined_temp_GHG_filtered.csv')
+    print('Temperature and GHG data: ')
+    dataset_information(df_temp, pd)
+    sorted_annual_temps = sorting_data(df_temp, 'Annual', pd)
+    sorted_emmisions = sorting_data(df_temp,'County Emissions (MTCO2e)', pd)
+    print('Seven number summary for annual temperatures: ')
+    seven_number_summary(sorted_annual_temps)
+    print('Seven number summary for county emissions: ')
+    seven_number_summary(sorted_emmisions)
+    
+    plot_annual_temperature_by_county(df_temp)
+    plot_emmisions_by_county(df_temp)
+
+    '''
     print('Temperature stuff: ')
     df_temp = pd.read_csv(file_temp)
     print(df_temp)
     dataset_information(df_temp, pd)
     sorted_annual_temps = sorting_annual_data(df_temp, pd)
     print('Seven number summary for annual temperatures: ')
-    five_number_summary(sorted_annual_temps)
+    seven_number_summary(sorted_annual_temps)
     
     # plotting data
-    #plot_annual_temperature_by_county(df_temp)
     #plot_location_by_county(df_temp)
     
+    new_temp_df = pd.read_csv('combined_temp_GHG.csv')
+    new_temp_df = filtering_GHG_data(new_temp_df, pd)
+    
+    new_temp_df.to_csv('combined_temp_GHG_filtered.csv', index=False)
+    
+    
     # Adding GHG data to temperature data
+    
     GHG_df = pd.read_csv('GHG Data/GHG_Reporting_Program_Publication_processed.csv')
     new_temp_df = adding_GHG_data(df_temp, GHG_df)
     
     print(new_temp_df)
-    new_temp_df.to_csv('temporary.csv', index=False)
+    '''
 
-
+    '''
     print('Precipitation stuff: ')
     df_prec = pd.read_csv(file_prec)
     #dataset_information(df_prec, pd)
 
-    '''
     location_list_temp = dataset_information(df_temp, pd)
     diff = location_list_temp.difference(location_list_prec)
     print('Locations in temperature data but not in precipitation data: ')
