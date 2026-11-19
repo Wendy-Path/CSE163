@@ -1,12 +1,12 @@
 import csv 
 
-def find_common_counties_each_year():
+def find_common_counties_each_year(start_year: int, end_year: int, file: str):
     counties_each_year = {}
 
-    for i in range(2012, 2025):  # Assuming years from 2012 to 2024
+    for i in range(start_year, end_year + 1):  # Assuming years from start_year to end_year
         counties_each_year[i] = set()
 
-    with open("GHG_Reporting_Program_Publication_20261115.csv", "r", newline="", encoding="utf-8") as infile:
+    with open(file, "r", newline="", encoding="utf-8") as infile:
         reader = csv.reader(infile)
         next(reader)
         
@@ -18,12 +18,14 @@ def find_common_counties_each_year():
     return common_counties
 
 
-def rows_with_common_counties(common_counties):
-    with open("GHG_Reporting_Program_Publication_20261115.csv", "r", newline="", encoding="utf-8") as infile:
+def rows_with_common_counties(common_counties: set[str],
+                              input_file: str,
+                              output_file: str) -> None:
+    with open(input_file, "r", newline="", encoding="utf-8") as infile:
         reader = csv.reader(infile)
         header = next(reader, None)  # Read the header row
 
-        with open("GHG_Reporting_Program_Publication_processed.csv", "w", newline="", encoding="utf-8") as outfile:
+        with open(output_file, "w", newline="", encoding="utf-8") as outfile:
             writer = csv.writer(outfile)
             header_written = False  # Track whether we have written the header yet
         
@@ -40,8 +42,8 @@ def rows_with_common_counties(common_counties):
 
 def main():
 
-    common_counties = find_common_counties_each_year()
-    rows_with_common_counties(common_counties)
+    common_counties = find_common_counties_each_year(2012, 2024, "GHG_Reporting_Program_Publication_20261115.csv")
+    rows_with_common_counties(common_counties, "GHG_Reporting_Program_Publication_20261115.csv", "GHG_Reporting_Program_Publication_processed.csv")
 
 if __name__ == "__main__":
     main()
