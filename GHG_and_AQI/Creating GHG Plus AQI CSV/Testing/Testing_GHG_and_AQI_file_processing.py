@@ -1,25 +1,20 @@
 import pandas as pd
 
-from GHG_and_AQI import CSV_file_processing_GHG
+from GHG_and_AQI import filtering_ghg_and_aqi_for_q1
 
-PREPROCESSED_FILE = (
-    "GHG_Data/Testing/GHG_Reporting_Program_Publication_20261115_small.csv"
-)
-PROCESSED_FILE = (
-    "GHG_Data/Testing/"
-    "GHG_Reporting_Program_Publication_20261115_small_processed.csv"
-)
+GHG_FILE = "GHG_and_AQI/Testing/GHG_Reporting_Program_Publication_processed_small.csv"
+AQI_FILE = "GHG_and_AQI/Testing/annual_aqi_by_county_washington_all_small.csv"
 
 
-def test_find_common_counties_each_year():
+def test_common_counties_ghg_aqi(ghg_file: str, aqi_file: str):
     """
-    Tests the find_common_counties_each_year function
+    Tests the common_counties_ghg_aqi function
     """
 
     assert (
-        {"Yakima", "King"}
-        == CSV_file_processing_GHG.find_common_counties_each_year(
-            2023, 2024, PREPROCESSED_FILE
+        ["Spokane", "King"]
+        == filtering_ghg_and_aqi_for_q1.common_counties_ghg_aqi(
+            GHG_FILE, AQI_FILE
         )
     )
 
