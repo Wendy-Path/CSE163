@@ -6,6 +6,7 @@ This program combines GHG and AQI data for Washington State between the years
 import csv
 import pandas as pd
 
+
 def common_counties_ghg_aqi(ghg_file: str, aqi_file: str) -> list[str]:
     """
     This function takes two CSV files as input. One contains GHG emissions
@@ -25,21 +26,30 @@ def common_counties_ghg_aqi(ghg_file: str, aqi_file: str) -> list[str]:
     with open(aqi_file, mode='r') as aqi_csv:
         reader = csv.reader(aqi_csv)
         for row in reader:
-            aqi_counties.add(row[1]) 
+            aqi_counties.add(row[1])
 
     # Find common counties
     common_counties = ghg_counties.intersection(aqi_counties)
 
     return list(common_counties)
 
-def filter_for_same_counties(ghg_file: str, aqi_file: str, common_counties: list[str]) -> None:
+
+def filter_for_same_counties(ghg_file: str,
+                             aqi_file: str,
+                             common_counties: list[str]) -> None:
     """
-    Takes in a GHG emissions CSV file, an AQI CSV file, and a list of common counties.
-    Filters both datasets to only include rows whose entry in the county column
-    appears in common counties. Writes the filtered data to new CSV files.
+    Takes in a GHG emissions CSV file, an AQI CSV file, and a list of common
+    counties. Filters both datasets to only include rows whose entry in the
+    county column appears in common counties. Writes the filtered data to new
+    CSV files.
     """
-    
-    with open('filtered_ghg_data_for_same_counties_as_aqi.csv', 'w', newline='', encoding='utf-8') as outfile:
+
+    with open(
+        "filtered_ghg_data_for_same_counties_as_aqi.csv",
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as outfile:
         writer = csv.writer(outfile)
         with open(ghg_file, mode='r') as infile:
             reader = csv.reader(infile)
@@ -47,7 +57,12 @@ def filter_for_same_counties(ghg_file: str, aqi_file: str, common_counties: list
                 if row[8] in common_counties:
                     writer.writerow(row)
 
-    with open('filtered_aqi_data_for_same_counties_as_ghg.csv', 'w', newline='', encoding='utf-8') as outfile:
+    with open(
+        "filtered_aqi_data_for_same_counties_as_ghg.csv",
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as outfile:
         writer = csv.writer(outfile)
         with open(aqi_file, mode='r') as infile:
             reader = csv.reader(infile)
@@ -70,8 +85,15 @@ def ghg_combine_rows_with_same_county(ghg_file: str) -> None:
     Writes the combined data to a new CSV file.
     """
     ghg_data = pd.read_csv(ghg_file)
-    ghg_data["Reported Emissions (MTCO2e)"] = ghg_data["Reported Emissions (MTCO2e)"].apply(convert_to_float)
-    ghg_data_grouped = ghg_data.groupby(['Year','County'])['Reported Emissions (MTCO2e)'].sum().reset_index()
+    ghg_data["Reported Emissions (MTCO2e)"] = (
+        ghg_data["Reported Emissions (MTCO2e)"].apply(convert_to_float)
+    )
+
+    ghg_data_grouped = (
+        ghg_data.groupby(["Year", "County"])["Reported Emissions (MTCO2e)"]
+        .sum()
+        .reset_index()
+    )
     ghg_data_grouped.to_csv('GHG_fully_processed_for_aqi.csv', index=False)
 
 
@@ -83,23 +105,32 @@ def ghg_plus_aqi(ghg_file: str, aqi_file: str) -> None:
     ghg_data = pd.read_csv(ghg_file)
     aqi_data = pd.read_csv(aqi_file)
     aqi_data = aqi_data[['Year', 'County', 'Median AQI']]
-    merged_data = pd.merge(ghg_data, aqi_data, on=['Year', 'County'], how='inner')
+    merged_data = pd.merge(
+        ghg_data,
+        aqi_data,
+        on=["Year", "County"],
+        how="inner"
+    )
     merged_data.to_csv('GHG_plus_AQI.csv', index=False)
 
 
 def main():
-    ghg_file = 'GHG_Reporting_Program_Publication_processed.csv' 
-    aqi_file = 'annual_aqi_by_county_washington_all.csv'       
+    ghg_file = 'GHG_Reporting_Program_Publication_processed.csv'
+    aqi_file = 'annual_aqi_by_county_washington_all.csv'
 
     common_counties = common_counties_ghg_aqi(ghg_file, aqi_file)
 
     filter_for_same_counties(ghg_file, aqi_file, common_counties)
 
-    ghg_combine_rows_with_same_county('filtered_ghg_data_for_same_counties_as_aqi.csv')
+    ghg_combine_rows_with_same_county(
+        "filtered_ghg_data_for_same_counties_as_aqi.csv"
+    )
 
-    ghg_plus_aqi('GHG_fully_processed_for_aqi.csv', 'filtered_aqi_data_for_same_counties_as_ghg.csv')
+    ghg_plus_aqi(
+        "GHG_fully_processed_for_aqi.csv",
+        "filtered_aqi_data_for_same_counties_as_ghg.csv"
+    )
 
 
 if __name__ == "__main__":
     main()
-
