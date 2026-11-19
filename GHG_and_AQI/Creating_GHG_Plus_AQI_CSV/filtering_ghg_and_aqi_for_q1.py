@@ -36,7 +36,9 @@ def common_counties_ghg_aqi(ghg_file: str, aqi_file: str) -> list[str]:
 
 def filter_for_same_counties(ghg_file: str,
                              aqi_file: str,
-                             common_counties: list[str]) -> None:
+                             common_counties: list[str],
+                             output_ghg_file: str,
+                             output_aqi_file: str) -> None:
     """
     Takes in a GHG emissions CSV file, an AQI CSV file, and a list of common
     counties. Filters both datasets to only include rows whose entry in the
@@ -45,7 +47,7 @@ def filter_for_same_counties(ghg_file: str,
     """
 
     with open(
-        "filtered_ghg_data_for_same_counties_as_aqi.csv",
+        output_ghg_file,
         "w",
         newline="",
         encoding="utf-8"
@@ -58,7 +60,7 @@ def filter_for_same_counties(ghg_file: str,
                     writer.writerow(row)
 
     with open(
-        "filtered_aqi_data_for_same_counties_as_ghg.csv",
+        output_aqi_file,
         "w",
         newline="",
         encoding="utf-8"
@@ -78,7 +80,7 @@ def convert_to_float(value: str) -> float:
     return float(value.replace(",", ""))
 
 
-def ghg_combine_rows_with_same_county(ghg_file: str) -> None:
+def ghg_combine_rows_with_same_county(ghg_file: str, output_file: str) -> None:
     """
     Takes in a file and combines the data in the emissions
     column for rows with the same year and county.
@@ -94,10 +96,10 @@ def ghg_combine_rows_with_same_county(ghg_file: str) -> None:
         .sum()
         .reset_index()
     )
-    ghg_data_grouped.to_csv('GHG_fully_processed_for_aqi.csv', index=False)
+    ghg_data_grouped.to_csv(output_file, index=False)
 
 
-def ghg_plus_aqi(ghg_file: str, aqi_file: str) -> None:
+def ghg_plus_aqi(ghg_file: str, aqi_file: str, output_file: str) -> None:
     """
     Takes in a GHG emissions CSV file and an AQI CSV file.
     Combines the rows of each file together based on the year and county.
@@ -111,7 +113,7 @@ def ghg_plus_aqi(ghg_file: str, aqi_file: str) -> None:
         on=["Year", "County"],
         how="inner"
     )
-    merged_data.to_csv('GHG_plus_AQI.csv', index=False)
+    merged_data.to_csv(output_file, index=False)
 
 
 def main():
@@ -120,15 +122,19 @@ def main():
 
     common_counties = common_counties_ghg_aqi(ghg_file, aqi_file)
 
-    filter_for_same_counties(ghg_file, aqi_file, common_counties)
+    filter_for_same_counties(ghg_file, aqi_file, common_counties,
+                             "filtered_ghg_data_for_same_counties_as_aqi.csv",
+                             "filtered_aqi_data_for_same_counties_as_ghg.csv")
 
     ghg_combine_rows_with_same_county(
-        "filtered_ghg_data_for_same_counties_as_aqi.csv"
+        "filtered_ghg_data_for_same_counties_as_aqi.csv",
+        "GHG_fully_processed_for_aqi.csv"
     )
 
     ghg_plus_aqi(
         "GHG_fully_processed_for_aqi.csv",
-        "filtered_aqi_data_for_same_counties_as_ghg.csv"
+        "filtered_aqi_data_for_same_counties_as_ghg.csv",
+        "GHG_plus_AQI.csv"
     )
 
 

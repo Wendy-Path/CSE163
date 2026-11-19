@@ -1,5 +1,0 @@
-﻿State,County,Year,Days with AQI,Good Days,Moderate Days,Unhealthy for Sensitive Groups Days,Unhealthy Days,Very Unhealthy Days,Hazardous Days,Max AQI,90th Percentile AQI,Median AQI,Days CO,Days NO2,Days Ozone,Days PM2.5,Days PM10,,,,,
-Washington,King,2024,366,255,108,3,0,0,0,119,61,41,0,3,127,236,0,,,,,
-Washington,Spokane,2024,366,280,85,1,0,0,0,106,62,38,0,0,120,238,8,,,,,
-Washington,King,2023,365,214,145,5,1,0,0,165,63,46,0,6,86,273,0,,,,,
-Washington,Spokane,2023,365,257,104,1,1,1,1,447,65,42,0,0,127,232,6,,,,,
