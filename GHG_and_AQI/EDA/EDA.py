@@ -43,14 +43,7 @@ def seven_number_summary(df: pd.DataFrame, column: str) -> None:
     q3 = df_summary.loc['75%', column]
     max_value = df_summary.loc['max', column]
 
-    print(f"Seven-number summary for {column}:")
-    print(f"Mean: {mean}")
-    print(f"Standard Deviation: {std}")
-    print(f"Minimum: {min_value}")
-    print(f"1st Quartile (Q1): {q1}")
-    print(f"Median: {median}")
-    print(f"3rd Quartile (Q3): {q3}")
-    print(f"Maximum: {max_value}")
+    return mean, std, min_value, q1, median, q3, max_value
 
 
 def line_plot(df: pd.DataFrame) -> None:
@@ -168,9 +161,29 @@ def main():
     print(f"Number of columns: {columns}")
     print()
 
-    seven_number_summary(df, 'Reported Emissions (MTCO2e)')
+    mean, std, min_value, q1, median, q3, max_value = (
+        seven_number_summary(df, "Reported Emissions (MTCO2e)")
+    )
+    print(f"Seven-number summary for Reported Emissions (MTCO2e):")
+    print(f"Mean: {mean}")
+    print(f"Standard Deviation: {std}")
+    print(f"Minimum: {min_value}")
+    print(f"1st Quartile (Q1): {q1}")
+    print(f"Median: {median}")
+    print(f"3rd Quartile (Q3): {q3}")
+    print(f"Maximum: {max_value}")
     print()
-    seven_number_summary(df, 'Median AQI')
+    mean, std, min_value, q1, median, q3, max_value = (
+        seven_number_summary(df, "Median AQI")
+    )
+    print(f"Seven-number summary for Median AQI:")
+    print(f"Mean: {mean}")
+    print(f"Standard Deviation: {std}")
+    print(f"Minimum: {min_value}")
+    print(f"1st Quartile (Q1): {q1}")
+    print(f"Median: {median}")
+    print(f"3rd Quartile (Q3): {q3}")
+    print(f"Maximum: {max_value}")
 
     line_plot(df)
     box_plot(df)
